@@ -11,7 +11,7 @@
 ### 初期設定
 1. VSCodeをインストールし，上記を参考に，VSCode内で`Dev Containers`，`Remote Development`拡張機能をインストール
 2. このリポジトリをクローンする（WSL上で`git clone https://github.com/yif11/Team2.git`する）
-3. WSL上で`Team2`がある場所に移動し，`code .`してVSCode上でプロジェクトを開く
+3. WSL上で`Team2`直下に移動（`cd /path/to/Team2/`）し，`code .`してVSCode上でプロジェクトを開く
 4. VSCode画面右下の`Reopen In Container`をクリックし，DevContainer（仮想環境）で開く
 5. `Ctrl + @`のショートカットキーでコンソールが開くので，そこで`npm init`コマンドを入力（必要なライブラリがインストールされる）
 
