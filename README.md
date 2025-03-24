@@ -17,6 +17,7 @@
 
 ### 開発手順
 [このサイト（https://zenn.dev/ynakashi/articles/1658c90cc3b673）](https://zenn.dev/ynakashi/articles/1658c90cc3b673)を参考にしてください  
+**GUIでの操作をする際は，masterブランチではなく自分のブランチであることを確認してから作業するようにしてください**  
 不明点があればお互い相談し合いましょう  
 触るのは基本的に`src`ディレクトリ以下だと思います  
 
