@@ -4,10 +4,12 @@ import { useState } from "react";
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
 
+	// テキストエリアに変化が起こったとき，その中の値を`comment`変数にセットする
 	const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setComment(e.target.value);
 	};
 
+	// Submit Comment ボタンが押されたとき，アラートを表示し，`comment`変数をリセットする
 	const handleCommentSubmit = () => {
 		alert(`Submitted comment: ${comment}`);
 		setComment("");
@@ -17,8 +19,12 @@ export const Summary: React.FC = () => {
 		<div className="summary-container p-4 bg-gray-200">
 			<h1 className="pb-4 text-3xl font-bold">Summary of Comments on Topic</h1>
 
-			<div className="topic text-2xl bg-gray-400 p-2 mb-2">topic</div>
+			{/* トピック */}
+			<div className="topic bg-gray-400 p-2 mb-2">
+				<h2 className="text-2xl">topic</h2>
+			</div>
 
+			{/* コメント */}
 			<div className="comment bg-blue-400 p-2 mb-2">
 				<h2 className="text-2xl">comment</h2>
 				<textarea
@@ -36,7 +42,10 @@ export const Summary: React.FC = () => {
 				</button>
 			</div>
 
-			<div className="summary text-2xl bg-red-400 p-2 mb-2">summary</div>
+			{/* サマリ */}
+			<div className="summary text-2xl bg-red-400 p-2 mb-2">
+				<h2 className="text-2xl">summary</h2>
+			</div>
 		</div>
 	);
 };
