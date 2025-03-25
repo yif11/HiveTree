@@ -58,3 +58,6 @@
 
 ### `biome.json`
 Biomeの設定ファイル
+
+git fetch origin
+git reset --hard master
