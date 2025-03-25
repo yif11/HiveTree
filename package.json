@@ -28,5 +28,17 @@
     "typescript": "5.7.2",
     "typescript-eslint": "8.24.1",
     "vite": "6.2.0"
-  }
+  },
+  "description": "- Ubuntu on WSL2   - Docker - VSCode   - `Dev Containers`，`Remote Development`拡張機能をインストール",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yif11/Team2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yif11/Team2/issues"
+  },
+  "homepage": "https://github.com/yif11/Team2#readme"
 }
