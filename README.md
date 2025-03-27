@@ -60,6 +60,3 @@
 Biomeの設定ファイル
 
 
-aaaaa
-git fetch origin
-git reset --hard master
