@@ -7,7 +7,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const commentsPath = path.join(__dirname, "data/comments.json");
+const commentsDir = path.join(__dirname, "data");
+const commentsPath = path.join(commentsDir, "comments.json");
+
+if (!fs.existsSync(commentsDir)) {
+	fs.mkdirSync(commentsDir);
+}
 
 if (!fs.existsSync(commentsPath)) {
 	fs.writeFileSync(commentsPath, "[]", "utf-8");
