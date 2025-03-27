@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState } from "react";
+import { getComments, postComment } from "../api/api";
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
@@ -15,7 +16,10 @@ export const Summary: React.FC = () => {
 	const handleCommentSubmit = () => {
 		// alert(`Submitted comment: ${comment}`);
 		setComment("");
-		setSummary(comment);
+		// setSummary(comment);
+		const res = postComment(comment);
+		getComments().then((comments) => setSummary(comments.join(", ")));
+		console.log(res);
 	};
 
 	return (
@@ -49,7 +53,7 @@ export const Summary: React.FC = () => {
 			{/* サマリ */}
 			<div className="summary text-2xl bg-red-400 p-2 mb-2">
 				<h2 className="text-2xl">summary</h2>
-				<span>(Submitted comment: {summary})</span>
+				<span>Comments: {summary}</span>
 			</div>
 		</div>
 	);
