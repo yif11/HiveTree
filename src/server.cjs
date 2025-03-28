@@ -14,9 +14,12 @@ if (!fs.existsSync(commentsDir)) {
 	fs.mkdirSync(commentsDir);//dataディレクトリが存在しない場合は作成
 }
 
-if (!fs.existsSync(commentsPath)) {
-	fs.writeFileSync(commentsPath, "[]", "utf-8");//ファイルがない場合は作成し初期化する
+if (fs.existsSync(commentsPath)) {
+	fs.unlinkSync(commentsPath); // あれば削除
 }
+
+fs.writeFileSync(commentsPath, "[]", "utf-8"); // 毎回空ファイルを新規作成
+
 
 app.post("/post-comments", (req, res) => {
 	const comments = JSON.parse(fs.readFileSync(commentsPath, "utf-8"));
