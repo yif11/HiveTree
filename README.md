@@ -59,4 +59,17 @@
 ### `biome.json`
 Biomeの設定ファイル
 
+## GeminiAPIの取得と設定
+このプロジェクトで Gemini API を利用するには、各自で APIキー を取得し、.env ファイルに設定する必要があります。
+### Gemini APIキーの取得方法
+1. Google の AI Studio にアクセス
+2. Google アカウントでログイン
+3. 「API キーを作成」ボタンをクリック
+4. 表示された API キーをコピーする
+
+### .env ファイルの作成と設定
+プロジェクトルートに .env ファイルを作成し、以下の内容を追加してください：
+VITE_GEMINI_API_KEY=ここに取得したAPIキーを貼り付ける
+VITE_GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-pro:generateContent
+
 
