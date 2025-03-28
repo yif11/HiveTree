@@ -1,8 +1,6 @@
-import 'dotenv/config';
-
 export async function fetchSummaryFromGemini(topic: string, posts: string[]): Promise<string> {
-  const apiKey = process.env.VITE_GEMINI_API_KEY as string;
-  const apiUrl = process.env.VITE_GEMINI_API_URL as string;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
+  const apiUrl = import.meta.env.VITE_GEMINI_API_URL as string;
 
   const prompt = `
 あなたは優秀な要約AIです。
