@@ -1,21 +1,21 @@
 const express = require("express");
-const fs = require("fs");
+const fs = require("fs");//ファイル操作用
 const path = require("path");
-const cors = require("cors");
+const cors = require("cors");//別のポートからのリクエストを許可するためのミドルウェア
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors());//corsを許可
 
-const commentsDir = path.join(__dirname, "data");
-const commentsPath = path.join(commentsDir, "comments.json");
-
+const commentsDir = path.join(__dirname, "data");//現在のディレクトリを基準にdataディレクトリを追加
+const commentsPath = path.join(commentsDir, "comments.json");//jsonのパスを設定
+//初期化の処理
 if (!fs.existsSync(commentsDir)) {
-	fs.mkdirSync(commentsDir);
+	fs.mkdirSync(commentsDir);//dataディレクトリが存在しない場合は作成
 }
 
 if (!fs.existsSync(commentsPath)) {
-	fs.writeFileSync(commentsPath, "[]", "utf-8");
+	fs.writeFileSync(commentsPath, "[]", "utf-8");//ファイルがない場合は作成し初期化する
 }
 
 app.post("/post-comments", (req, res) => {
