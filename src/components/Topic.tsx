@@ -5,7 +5,7 @@ import axios from 'axios';
 //トピックを表示するコンポーネントの作成
 const TopicComponent = () => {
   const [topics, setTopics] =useState([]); //型の指定に関して、今後確認必要？
-  const [error, seterror] = useState<string |null>(null);
+  const [error, seterror] = useState<string | null>(null);
 
   useEffect(() => {
     
