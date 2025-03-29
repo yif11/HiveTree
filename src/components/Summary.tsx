@@ -77,9 +77,7 @@ export const Summary: React.FC = () => {
 				<h2 className="text-2xl font-semibold text-red-600 mb-3">📝 要約</h2>
 				{/* 要約結果表示 */}
 				{loading ? (
-					<div className="animate-pulse text-gray-500">
-						⏳ 要約を生成中です...
-					</div>
+					<div className="animate-pulse text-gray-500">⏳ 要約を生成中...</div>
 				) : (
 					<p className="text-red-700 text-lg leading-relaxed">
 						{summary || "（まだ要約はありません）"}
