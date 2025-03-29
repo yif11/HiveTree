@@ -1,18 +1,18 @@
 const express = require("express");
-const fs = require("fs");//ファイル操作用
+const fs = require("fs"); //ファイル操作用
 const path = require("path");
-const cors = require("cors");//別のポートからのリクエストを許可するためのミドルウェア
+const cors = require("cors"); //別のポートからのリクエストを許可するためのミドルウェア
 
 const app = express();
 app.use(express.json());
-app.use(cors());//corsを許可
+app.use(cors()); //corsを許可
 
-const commentsDir = path.join(__dirname, "data");//現在のディレクトリを基準にdataディレクトリを追加
-const commentsPath = path.join(commentsDir, "comments.json");//jsonのパスを設定
+const commentsDir = path.join(__dirname, "data"); //現在のディレクトリを基準にdataディレクトリを追加
+const commentsPath = path.join(commentsDir, "comments.json"); //jsonのパスを設定
 
 // 初期化の処理
 if (!fs.existsSync(commentsDir)) {
-	fs.mkdirSync(commentsDir);//dataディレクトリが存在しない場合は作成
+	fs.mkdirSync(commentsDir); //dataディレクトリが存在しない場合は作成
 }
 
 if (fs.existsSync(commentsPath)) {
@@ -20,7 +20,11 @@ if (fs.existsSync(commentsPath)) {
 }
 
 // 初期値として空の "comments" 配列を含むオブジェクトを保存
-fs.writeFileSync(commentsPath, JSON.stringify({ comments: [] }, null, 2), "utf-8");
+fs.writeFileSync(
+	commentsPath,
+	JSON.stringify({ comments: [] }, null, 2),
+	"utf-8",
+);
 
 // POST: コメントを追加
 app.post("/post-comments", (req, res) => {
