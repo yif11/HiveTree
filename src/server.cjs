@@ -5,7 +5,8 @@ const cors = require("cors"); //別のポートからのリクエストを許可
 
 const app = express();
 app.use(express.json());
-app.use(cors()); //corsを許可
+// app.use(cors()); //corsを許可
+app.use(cors({ origin: "http://localhost:5173" }));
 
 const commentsDir = path.join(__dirname, "data"); //現在のディレクトリを基準にdataディレクトリを追加
 const commentsPath = path.join(commentsDir, "comments.json"); //jsonのパスを設定
@@ -13,10 +14,6 @@ const commentsPath = path.join(commentsDir, "comments.json"); //jsonのパスを
 // 初期化の処理
 if (!fs.existsSync(commentsDir)) {
 	fs.mkdirSync(commentsDir); //dataディレクトリが存在しない場合は作成
-}
-
-if (fs.existsSync(commentsPath)) {
-	fs.unlinkSync(commentsPath); // あれば削除
 }
 
 // 初期値として空の "comments" 配列を含むオブジェクトを保存

@@ -1,40 +1,32 @@
 import type React from "react";
 import { useState } from "react";
+import useSWR from "swr";
 import { getComments, postComment } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
-	const [summary, setSummary] = useState("");
-	const [loading, setLoading] = useState(false); // ローディング状態
 
-	// テキストエリアに変化が起こったとき，その中の値を`comment`変数にセット
+	// SWRを使って要約を定期取得（10秒ごと）
+	const { data: summary, error } = useSWR(
+		"/summary",
+		async () => {
+			const comments = await getComments();
+			const topic = "天気"; // 仮のトピック
+			return await fetchSummaryFromGemini(topic, comments);
+		},
+		{
+			refreshInterval: 10000, // 10秒ごとにポーリング
+		},
+	);
+
 	const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setComment(e.target.value);
 	};
 
-	// Submit Comment ボタンが押されたとき，アラートを表示し，`comment`変数をリセット
-	// また，`summary`変数に`comment`変数の値をセット
 	const handleCommentSubmit = async () => {
-		// alert(`Submitted comment: ${comment}`);
 		setComment("");
-
-		// setSummary(comment);
-		await postComment(comment); // コメントをサーバーに送信
-		setLoading(true); // ローディング開始
-
-		try {
-			const comments = await getComments(); // 全コメント取得
-			const topic = "天気"; // ※ トピック名は仮置き（あとでUIで選べるようにできる）
-
-			const result = await fetchSummaryFromGemini(topic, comments); // Geminiによる要約
-			setSummary(result);
-		} catch (error) {
-			console.error("Gemini要約エラー:", error);
-			setSummary("要約に失敗しました。");
-		} finally {
-			setLoading(false); // ローディング終了
-		}
+		await postComment(comment); // コメントを送信（即時要約更新なし）
 	};
 
 	return (
@@ -76,8 +68,8 @@ export const Summary: React.FC = () => {
 			<div className="summary bg-red-50 border-l-4 border-red-400 p-6 rounded-lg shadow-inner">
 				<h2 className="text-2xl font-semibold text-red-600 mb-3">📝 要約</h2>
 				{/* 要約結果表示 */}
-				{loading ? (
-					<div className="animate-pulse text-gray-500">⏳ 要約を生成中...</div>
+				{error ? (
+					<p className="text-red-600">⚠️ 要約の取得に失敗しました。</p>
 				) : (
 					<p className="text-red-700 text-lg leading-relaxed">
 						{summary || "（まだ要約はありません）"}
