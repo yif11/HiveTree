@@ -11,13 +11,17 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "4.0.14",
-    "dotenv": "16.4.7",
     "cors": "2.8.5",
+    "d3-scale": "4.0.2",
+    "dotenv": "16.4.7",
     "express": "4.21.2",
     "fs": "0.0.1-security",
+    "node-fetch": "2.7.0",
     "path": "0.12.7",
+    "prop-types": "15.8.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-simple-maps": "3.0.0",
     "tailwindcss": "4.0.14"
   },
   "devDependencies": {
