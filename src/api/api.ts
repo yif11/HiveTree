@@ -1,5 +1,19 @@
 const apiUrl = "http://localhost:5000";
 
+export const getTopic = async () => {
+	try {
+		const response = await fetch(`${apiUrl}/topic`);
+		if (!response.ok) {
+			throw new Error(`Error: ${response.status} ${response.statusText}`);
+		}
+		const data = await response.json();
+		return data.topic;
+	} catch (error) {
+		console.error("Failed to fetch topic:", error);
+		throw error;
+	}
+};
+
 export const postComment = async (comment: string) => {
 	const response = await fetch(`${apiUrl}/post-comments`, {
 		method: "POST",
