@@ -3,16 +3,31 @@ import { useState } from "react";
 import useSWR from "swr";
 import { getComments, postComment } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
+import { getTopic } from "../api/topic";
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
+	const [topic, setTopic] = useState("");
+
+	const { error: topicError } = useSWR(
+		"/topic",
+		async () => {
+			setTopic(await getTopic());
+		},
+		{
+			refreshInterval: 10000, // 10秒ごとにポーリング
+		},
+	);
 
 	// SWRを使って要約を定期取得（10秒ごと）
-	const { data: summary, error } = useSWR(
+	const { data: summary, error: summaryError } = useSWR(
 		"/summary",
 		async () => {
 			const comments = await getComments();
-			const topic = "天気"; // 仮のトピック
+			// const topic = "天気";
+			if (topic === "") {
+				throw new Error("トピックが取得できていません");
+			}
 			return await fetchSummaryFromGemini(topic, comments);
 		},
 		{
@@ -39,7 +54,13 @@ export const Summary: React.FC = () => {
 			{/* トピック表示 */}
 			<div className="topic bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
 				<h2 className="text-2xl font-semibold text-gray-700 mb-2">📌 Topic</h2>
-				<p className="text-gray-900 text-6xl">example topic</p>
+				{topicError ? (
+					<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
+				) : (
+					<p className="text-red-700 text-lg leading-relaxed">
+						{topic || "（トピック取得中）"}
+					</p>
+				)}
 			</div>
 
 			{/* コメント入力フォーム */}
@@ -68,7 +89,7 @@ export const Summary: React.FC = () => {
 			<div className="summary bg-red-50 border-l-4 border-red-400 p-6 rounded-lg shadow-inner">
 				<h2 className="text-2xl font-semibold text-red-600 mb-3">📝 要約</h2>
 				{/* 要約結果表示 */}
-				{error ? (
+				{summaryError ? (
 					<p className="text-red-600">⚠️ 要約の取得に失敗しました。</p>
 				) : (
 					<p className="text-red-700 text-lg leading-relaxed">
