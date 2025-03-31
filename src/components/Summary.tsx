@@ -1,9 +1,15 @@
 import type React from "react";
 import { useState } from "react";
 import useSWR from "swr";
-import { getComments, postComment } from "../api/api";
+import { getComments, postTopicAndComment } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
 import { getTopic } from "../api/topic";
+
+type postData = {
+	id: string;
+	topic: string;
+	comment: string;
+};
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
@@ -41,7 +47,12 @@ export const Summary: React.FC = () => {
 
 	const handleCommentSubmit = async () => {
 		setComment("");
-		await postComment(comment); // コメントを送信（即時要約更新なし）
+		const postData: postData = {
+			id: "0",
+			topic: topic,
+			comment: comment,
+		};
+		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
 	};
 
 	return (

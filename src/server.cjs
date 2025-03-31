@@ -19,9 +19,32 @@ if (!fs.existsSync(commentsDir)) {
 // 初期値として空の "comments" 配列を含むオブジェクトを保存
 fs.writeFileSync(
 	commentsPath,
-	JSON.stringify({ comments: [] }, null, 2),
+	JSON.stringify({ topics: [] }, null, 2),
 	"utf-8",
 );
+
+app.post("/post-topic-and-comment", (req, res) => {
+	const { id, topic, comment } = req.body;
+	const data = fs.existsSync(commentsPath)
+		? JSON.parse(fs.readFileSync(commentsPath, "utf-8"))
+		: { topics: [] };
+
+	// トピックが既に存在するか確認
+	const existingTopic = data.topics.find((t) => t.id === id);
+
+	if (existingTopic) {
+		existingTopic.comments.push(comment);
+	} else {
+		data.topics.push({
+			id,
+			name: topic,
+			comments: [comment],
+		});
+	}
+
+	fs.writeFileSync(commentsPath, JSON.stringify(data, null, 2), "utf-8");
+	res.json(req.body);
+});
 
 // POST: コメントを追加
 app.post("/post-comments", (req, res) => {
