@@ -29,10 +29,15 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 		}
 
 		// 記事データを抽出
-		return data.items.map((item: any) => ({
-			url: item.url || "No URL",
-			title: item.title || "No Title",
-		}));
+		const firstItem = data.items[0];
+		if (!firstItem || typeof firstItem !== "object") {
+			console.error("Error: Invalid item structure.");
+			return [];
+		}
+		return {
+			url: firstItem.url || "No URL",
+			title: firstItem.title || "No Title",
+		};
 	} catch (error) {
 		console.error("Error fetching topics:", error);
 		return [];
