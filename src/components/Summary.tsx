@@ -14,6 +14,7 @@ type postData = {
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
 	const [topic, setTopic] = useState("");
+	const [topicLevel, setTopicLevel] = useState(0);
 
 	const { error: topicError } = useSWR(
 		"/topic",
@@ -38,6 +39,9 @@ export const Summary: React.FC = () => {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
+			setTopicLevel(
+				Math.min(4, Math.floor(topicAndComments[id].comments.length / 3)),
+			);
 			return await fetchSummaryFromGemini(id, topicAndComments);
 		},
 		{
@@ -103,6 +107,8 @@ export const Summary: React.FC = () => {
 			{/* 要約表示 */}
 			<div className="summary bg-red-50 border-l-4 border-red-400 p-6 rounded-lg shadow-inner">
 				<h2 className="text-2xl font-semibold text-red-600 mb-3">📝 要約</h2>
+				<div className="text-gray-700 mb-2">topicLevel: {topicLevel}</div>
+
 				{/* 要約結果表示 */}
 				{summaryError ? (
 					<p className="text-red-600">⚠️ 要約の取得に失敗しました。</p>
