@@ -1,12 +1,12 @@
 import type React from "react";
 import { useState } from "react";
 import useSWR from "swr";
-import { getComments, postTopicAndComment } from "../api/api";
+import { getTopicAndComments, postTopicAndComment } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
 import { getTopic } from "../api/topic";
 
 type postData = {
-	id: string;
+	id: number;
 	topic: string;
 	comment: string;
 };
@@ -29,12 +29,15 @@ export const Summary: React.FC = () => {
 	const { data: summary, error: summaryError } = useSWR(
 		"/summary",
 		async () => {
-			const comments = await getComments();
+			// const comments = await getComments();
+			const topicAndComments = await getTopicAndComments();
+			const id = 0; // トピックID（仮）
 			// const topic = "天気";
 			if (topic === "") {
 				throw new Error("トピックが取得できていません");
 			}
-			return await fetchSummaryFromGemini(topic, comments);
+			// return await fetchSummaryFromGemini(topic, comments);
+			return await fetchSummaryFromGemini(id, topicAndComments);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
@@ -48,7 +51,7 @@ export const Summary: React.FC = () => {
 	const handleCommentSubmit = async () => {
 		setComment("");
 		const postData: postData = {
-			id: "0",
+			id: 0, // トピックID（仮）
 			topic: topic,
 			comment: comment,
 		};

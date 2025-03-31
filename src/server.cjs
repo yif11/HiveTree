@@ -46,6 +46,14 @@ app.post("/post-topic-and-comment", (req, res) => {
 	res.json(req.body);
 });
 
+app.get("/get-topic-and-comment", (req, res) => {
+	const data = fs.existsSync(commentsPath)
+		? JSON.parse(fs.readFileSync(commentsPath, "utf-8"))
+		: { topics: [] };
+
+	res.json(data.topics || []); // ← 配列だけ返す！
+});
+
 // POST: コメントを追加
 app.post("/post-comments", (req, res) => {
 	const data = JSON.parse(fs.readFileSync(commentsPath, "utf-8"));
