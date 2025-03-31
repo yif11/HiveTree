@@ -18,7 +18,8 @@ export const Summary: React.FC = () => {
 	const { error: topicError } = useSWR(
 		"/topic",
 		async () => {
-			setTopic(await getTopic());
+			const topics = await getTopic();
+			setTopic(topics.length > 0 ? topics[0].title : "No Title");
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
