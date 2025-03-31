@@ -39,7 +39,6 @@ export const Summary: React.FC = () => {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
-			// setTopicLevel(Math.floor(topicAndComments[id].comments.length / 3));
 			setTopicLevel(
 				Math.min(4, Math.floor(topicAndComments[id].comments.length / 3)),
 			);
