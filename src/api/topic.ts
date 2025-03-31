@@ -34,10 +34,12 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 			console.error("Error: Invalid item structure.");
 			return [];
 		}
-		return {
-			url: firstItem.url || "No URL",
-			title: firstItem.title || "No Title",
-		};
+		return [
+			{
+				url: firstItem.url || "No URL",
+				title: firstItem.title || "No Title",
+			},
+		];
 	} catch (error) {
 		console.error("Error fetching topics:", error);
 		return [];
