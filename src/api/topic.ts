@@ -6,11 +6,11 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 		// フォーマットは「jsonfeed」
 		const apiURL =
 			"https://api.gdeltproject.org/api/v2/geo/geo?query=Japan&sourcelang:japanese&sourcecountry:Japan&format=jsonfeed";
-		console.log("API URL:", apiURL);
+		// console.log("API URL:", apiURL);
 
 		// APIリクエスト
 		const response = await fetch(apiURL);
-		console.log("Response status:", response.status);
+		// console.log("Response status:", response.status);
 
 		if (!response.ok) {
 			throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -18,7 +18,7 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 
 		// レスポンスをJSONとして取得
 		const data = await response.json();
-		console.log("Response data:", data);
+		// console.log("Response data:", data);
 
 		// items が存在するか確認、データの型の確認
 		if (!data.items || !Array.isArray(data.items)) {
