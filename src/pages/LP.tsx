@@ -18,7 +18,7 @@ const LP = () => {
 				}}
 			>
 				<img
-					src="/tree-image.png"
+					src="./tree-image.png"
 					alt="Tree Graphic"
 					style={{ maxWidth: "40%" }}
 				/>
