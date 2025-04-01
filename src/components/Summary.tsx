@@ -13,16 +13,20 @@ type postData = {
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
-	const [topic, setTopic] = useState("");
+	const [topicUrl, setTopicUrl] = useState("");
+	const [topicTitle, setTopicTitle] = useState("");
+	const [topicSummary, setTopicSummary] = useState("");
 
 	const { error: topicError } = useSWR(
 		"/topic",
 		async () => {
 			const topics = await getTopic();
-			setTopic(topics.length > 0 ? topics[0].title : "No Title");
+			setTopicUrl(topics.length > 0 ? topics[0].url : "No URL");
+			setTopicTitle(topics.length > 0 ? topics[0].title : "No Title");
+			setTopicSummary(topics.length > 0 ? topics[0].summary : "No Summary");
 		},
 		{
-			refreshInterval: 10000, // 10秒ごとにポーリング
+			refreshInterval: 3600000, // 3600秒ごとにポーリング
 		},
 	);
 
@@ -34,7 +38,7 @@ export const Summary: React.FC = () => {
 			const topicAndComments = await getTopicAndComments();
 			const id = 0; // トピックID（仮）
 			// const topic = "天気";
-			if (topic === "") {
+			if (topicTitle === "") {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
@@ -53,7 +57,7 @@ export const Summary: React.FC = () => {
 		setComment("");
 		const postData: postData = {
 			id: 0, // トピックID（仮）
-			topic: topic,
+			topic: topicTitle,
 			comment: comment,
 		};
 		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
@@ -72,9 +76,17 @@ export const Summary: React.FC = () => {
 				{topicError ? (
 					<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
 				) : (
-					<p className="text-red-700 text-lg leading-relaxed">
-						{topic || "（トピック取得中）"}
-					</p>
+					<>
+						<p className="text-red-700 text-lg leading-relaxed">
+							{topicUrl || "（トピックURL取得中）"}
+						</p>
+						<p className="text-red-700 text-lg leading-relaxed">
+							{topicTitle || "（トピックタイトル取得中）"}
+						</p>
+						<p className="text-red-700 text-lg leading-relaxed">
+							{topicSummary || "（トピックサマリ取得中）"}
+						</p>
+					</>
 				)}
 			</div>
 
