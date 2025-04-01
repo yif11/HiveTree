@@ -1,18 +1,26 @@
 import type React from "react";
 import { useState } from "react";
 import useSWR from "swr";
-import { getComments, postComment } from "../api/api";
+import { getTopicAndComments, postTopicAndComment } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
 import { getTopic } from "../api/topic";
+
+type postData = {
+	id: number;
+	topic: string;
+	comment: string;
+};
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
 	const [topic, setTopic] = useState("");
+	const [topicLevel, setTopicLevel] = useState(0);
 
 	const { error: topicError } = useSWR(
 		"/topic",
 		async () => {
-			setTopic(await getTopic());
+			const topics = await getTopic();
+			setTopic(topics.length > 0 ? topics[0].title : "No Title");
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
@@ -23,12 +31,18 @@ export const Summary: React.FC = () => {
 	const { data: summary, error: summaryError } = useSWR(
 		"/summary",
 		async () => {
-			const comments = await getComments();
+			// const comments = await getComments();
+			const topicAndComments = await getTopicAndComments();
+			const id = 0; // トピックID（仮）
 			// const topic = "天気";
 			if (topic === "") {
 				throw new Error("トピックが取得できていません");
 			}
-			return await fetchSummaryFromGemini(topic, comments);
+			// return await fetchSummaryFromGemini(topic, comments);
+			setTopicLevel(
+				Math.min(4, Math.floor(topicAndComments[id].comments.length / 3)),
+			);
+			return await fetchSummaryFromGemini(id, topicAndComments);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
@@ -41,7 +55,12 @@ export const Summary: React.FC = () => {
 
 	const handleCommentSubmit = async () => {
 		setComment("");
-		await postComment(comment); // コメントを送信（即時要約更新なし）
+		const postData: postData = {
+			id: 0, // トピックID（仮）
+			topic: topic,
+			comment: comment,
+		};
+		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
 	};
 
 	return (
@@ -88,6 +107,8 @@ export const Summary: React.FC = () => {
 			{/* 要約表示 */}
 			<div className="summary bg-red-50 border-l-4 border-red-400 p-6 rounded-lg shadow-inner">
 				<h2 className="text-2xl font-semibold text-red-600 mb-3">📝 要約</h2>
+				<div className="text-gray-700 mb-2">topicLevel: {topicLevel}</div>
+
 				{/* 要約結果表示 */}
 				{summaryError ? (
 					<p className="text-red-600">⚠️ 要約の取得に失敗しました。</p>
