@@ -1,3 +1,5 @@
+import { summarizeArticleFromURL } from "./gemini";
+
 export async function getTopic(): Promise<{ url: string; title: string }[]> {
 	try {
 		// API URL
@@ -34,10 +36,16 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 			console.error("Error: Invalid item structure.");
 			return [];
 		}
+
+		const url = firstItem.url || "No URL";
+		const title = firstItem.title || "No Title";
+
+		const topicSummary = summarizeArticleFromURL(url, title);
+		// console.log("Topic summary:", topicSummary);
+
 		return [
 			{
-				url: firstItem.url || "No URL",
-				title: firstItem.title || "No Title",
+				summary: topicSummary,
 			},
 		];
 	} catch (error) {
