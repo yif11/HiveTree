@@ -1,4 +1,8 @@
-export async function getTopic(): Promise<{ url: string; title: string }[]> {
+import { summarizeArticleFromURL } from "./gemini";
+
+export async function getTopic(): Promise<
+	{ url: string; title: string; summary: string }[]
+> {
 	try {
 		// API URL
 		// GDELT APIを使用して日本語のトピックを取得
@@ -34,10 +38,18 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 			console.error("Error: Invalid item structure.");
 			return [];
 		}
+
+		const url = firstItem.url || "No URL";
+		const title = firstItem.title || "No Title";
+
+		const topicSummary = await summarizeArticleFromURL(url, title);
+		// console.log("Topic summary:", topicSummary);
+
 		return [
 			{
-				url: firstItem.url || "No URL",
-				title: firstItem.title || "No Title",
+				url: url,
+				title: title,
+				summary: topicSummary,
 			},
 		];
 	} catch (error) {
