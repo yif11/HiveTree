@@ -1,6 +1,8 @@
 import { summarizeArticleFromURL } from "./gemini";
 
-export async function getTopic(): Promise<{ url: string; title: string }[]> {
+export async function getTopic(): Promise<
+	{ url: string; title: string; summary: string }[]
+> {
 	try {
 		// API URL
 		// GDELT APIを使用して日本語のトピックを取得
@@ -40,11 +42,13 @@ export async function getTopic(): Promise<{ url: string; title: string }[]> {
 		const url = firstItem.url || "No URL";
 		const title = firstItem.title || "No Title";
 
-		const topicSummary = summarizeArticleFromURL(url, title);
+		const topicSummary = await summarizeArticleFromURL(url, title);
 		// console.log("Topic summary:", topicSummary);
 
 		return [
 			{
+				url: url,
+				title: title,
 				summary: topicSummary,
 			},
 		];
