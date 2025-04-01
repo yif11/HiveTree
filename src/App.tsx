@@ -1,7 +1,8 @@
 import type React from "react";
 import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { Summary } from "./components/Summary.tsx";
 import LP from "./pages/LP.tsx"; // LP コンポーネントのパスを指定
+import { Summary } from "./pages/Summary.tsx";
+import { TopicList } from "./pages/TopicList.tsx";
 
 const App: React.FC = () => {
 	return (
@@ -19,6 +20,11 @@ const App: React.FC = () => {
 								・Summary
 							</Link>
 						</li>
+						<li>
+							<Link to="/topic-list" className="font-bold">
+								・TopicList
+							</Link>
+						</li>
 					</ul>
 				</nav>
 
@@ -26,6 +32,7 @@ const App: React.FC = () => {
 				<Routes>
 					<Route path="/" element={<LP />} />
 					<Route path="/summary" element={<Summary />} />
+					<Route path="/topic-list" element={<TopicList />} />
 				</Routes>
 			</div>
 		</Router>
