@@ -1,8 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import MapPostArea from "./components/MapPostArea.tsx";
-import { Summary } from "./components/Summary.tsx";
+import MapPostArea from "./pages/MapPostArea.tsx";
 import App from "./App.tsx";
 
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
@@ -11,4 +10,4 @@ createRoot(document.getElementById("root")!).render(
 		<App />
 		<MapPostArea />
 	</StrictMode>,
-);
+);//MapPostAreaをテスト用に追加している。
