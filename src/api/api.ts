@@ -102,3 +102,25 @@ export const getComments = async () => {
 		throw error;
 	}
 };
+
+export const postUserIP = async (ip: string) => {
+	const res = await fetch("http://localhost:5000/api/save-ip", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ ip }),
+	});
+	return await res.json();
+};
+
+export type SavedIPEntry = {
+	ip: string;
+	lat: number;
+	lon: number;
+};
+
+export const getSavedIPs = async (): Promise<SavedIPEntry[]> => {
+	const res = await fetch("http://localhost:5000/api/iplist-return");
+	return await res.json();
+};
