@@ -52,8 +52,8 @@ export const getTopicAndComments = async () => {
 		// 	typeof item === "object" && item.comment ? item.comment : item,
 		// );
 		return data.map((item) =>
-			typeof item === "object" && item.comment && item.topic
-				? { id: item.id, topic: item.topic, comment: item.comment }
+			typeof item === "object" && item.comments && item.topic
+				? { id: item.id, topic: item.topic, comments: item.comments }
 				: item,
 		);
 	} catch (error) {

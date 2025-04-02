@@ -20,6 +20,9 @@ export const Summary: React.FC = () => {
 		summary: "No Summary",
 	});
 	const [topicLevel, setTopicLevel] = useState(0);
+	const [matchingComments, setMatchingComment] = useState<string[] | null>(
+		null,
+	);
 	// const [summary, setSummary] = useState<string | null>(null);
 	// const [summaryError, setSummaryError] = useState<Error | null>(null);
 
@@ -27,21 +30,44 @@ export const Summary: React.FC = () => {
 	const { data: summary, error: summaryError } = useSWR(
 		"/summary",
 		async () => {
+			const topicData = sessionStorage.getItem("topic");
+			if (topicData) {
+				const parsedTopic = JSON.parse(topicData);
+				await setTopic(parsedTopic);
+			}
+
 			// const comments = await getComments();
 			const topicAndComments = await getTopicAndComments();
 			if (topic.title === "") {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
+			const matchingTopic = topicAndComments.find(
+				(gotTopic) => gotTopic.id === topic.id,
+			);
+			if (matchingTopic) {
+				setMatchingComment(matchingTopic.comments);
+				console.log("matchingComment", matchingComments);
+			}
+
+			// console.log("matchingTopic", matchingTopic);
 			setTopicLevel(() => {
-				const matchingTopic = topicAndComments.find(
-					(gotTopic) => gotTopic.id === topic.id,
-				);
+				// const matchingTopic = topicAndComments.find(
+				// 	(gotTopic) => gotTopic.id === topic.id,
+				// );
 				return matchingTopic
 					? Math.min(4, Math.floor(matchingTopic.comments.length / 3))
 					: 0;
 			});
-			return await fetchSummaryFromGemini(topic.url, topicAndComments);
+			// return await fetchSummaryFromGemini(topic.url, topicAndComments);
+			// console.log("matchingComment", matchingComment);
+			console.log("topic.url", topic.url);
+			return await fetchSummaryFromGemini(
+				topic.url,
+				matchingComments
+					? [{ name: topic.title, comments: matchingComments }]
+					: [],
+			);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
