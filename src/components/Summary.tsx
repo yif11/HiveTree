@@ -2,6 +2,7 @@ import type React from "react";
 import { useState } from "react";
 import useSWR from "swr";
 import { getTopicAndComments, postTopicAndComment } from "../api/api";
+import { postUserIP } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
 import { getTopic } from "../api/topic";
 
@@ -65,6 +66,16 @@ export const Summary: React.FC = () => {
 			comment: comment,
 		};
 		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
+
+		try {
+			//IPアドレスを取得してサーバに送信する
+			const response = await fetch("https://api.ipify.org?format=json");
+			const data = await response.json();
+			await postUserIP(data.ip);
+			console.log(`Send IP: ${data.ip}!!`);
+		} catch (error) {
+			console.error("Failed to fetch or send user IP:", error);
+		}
 	};
 
 	return (
