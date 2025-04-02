@@ -15,7 +15,7 @@ export const getTopic = async () => {
 };
 
 export const postTopicAndComment = async (postData: {
-	id: number;
+	id: string;
 	topic: string;
 	comment: string;
 }) => {
@@ -53,7 +53,7 @@ export const getTopicAndComments = async () => {
 		// );
 		return data.map((item) =>
 			typeof item === "object" && item.comment && item.topic
-				? { topic: item.topic, comment: item.comment }
+				? { id: item.id, topic: item.topic, comment: item.comment }
 				: item,
 		);
 	} catch (error) {
