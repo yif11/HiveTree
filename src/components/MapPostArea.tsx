@@ -3,6 +3,7 @@ import { scaleLinear } from "d3-scale";
 import type { Feature } from "geojson";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { SavedIPEntry, getSavedIPs } from "../api/api";
 
 import {
 	ComposableMap,
@@ -33,7 +34,7 @@ export const MapPostArea = () => {
 	const [geoFeatures, setGeoFeatures] = useState<
 		Feature<GeoPermissibleObjects>[]
 	>([]);
-	const [showMarkers] = useState(false);
+	const [showMarkers] = useState(true);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -43,86 +44,14 @@ export const MapPostArea = () => {
 				.features as Feature<GeoPermissibleObjects>[];
 			setGeoFeatures(features);
 
-			const dummyIPs = [
-				"113.38.224.0",
-				"119.26.220.0",
-				"58.13.134.0",
-				"113.144.128.0",
-				"210.132.144.0",
-				"182.251.64.0",
-				"113.149.154.0",
-				"113.149.155.128",
-				"114.181.128.0",
-				"219.126.112.0",
-				"118.241.58.0",
-				"60.35.204.0",
-				"106.163.137.0",
-				"115.162.20.0",
-				"160.86.79.64",
-				"160.86.79.128",
-				"182.171.124.0",
-				"61.112.112.0",
-				"180.38.112.0",
-				"60.239.48.0",
-				"103.95.104.0",
-				"114.189.16.0",
-				"153.246.111.0",
-				"27.86.176.0",
-				"60.62.184.0",
-				"114.18.80.0",
-				"114.189.32.0",
-				"124.146.96.0",
-				"106.150.88.0",
-				"122.145.160.0",
-				"14.9.35.0",
-				"14.9.35.128",
-				"14.9.36.0",
-				"114.186.144.0",
-				"118.7.204.0",
-				"118.7.220.0",
-				"153.145.136.0",
-				"193.116.32.0",
-				"153.144.208.0",
-				"180.17.128.0",
-				"59.128.148.0",
-				"43.234.208.0",
-				"36.8.172.0",
-				"220.109.16.0",
-				"153.238.130.0",
-				"90.149.160.0",
-				"90.149.208.0",
-				"90.149.220.0",
-				"90.149.221.0",
-				"92.202.92.0",
-				"92.203.255.0",
-			];
-
-			const results: Post[] = [];
-			let ipcount = 0;
-
-			for (const ip of dummyIPs) {
-				try {
-					const res = await fetch(`http://localhost:5000/api/geoip?ip=${ip}`);
-					const data = await res.json();
-					if (ipcount % 100 === 0) {
-						console.log(`IP Count: ${ipcount}/${dummyIPs.length}`);
-					}
-					ipcount += 1;
-
-					if (data.latitude && data.longitude) {
-						results.push({
-							ip,
-							coordinates: [
-								Number.parseFloat(data.longitude),
-								Number.parseFloat(data.latitude),
-							],
-							score: Math.random() * 2 - 1,
-						});
-					}
-				} catch (error) {
-					console.error(`IP ${ip} の位置情報取得に失敗:`, error);
-				}
-			}
+			const ipData = await getSavedIPs(); // すでに緯度経度が入ってるやつを取得
+			const results: Post[] = ipData
+				.filter((entry) => entry.lat && entry.lon)
+				.map((entry) => ({
+					ip: entry.ip,
+					coordinates: [entry.lon, entry.lat],
+					score: Math.random() * 2 - 1, // ←仮のランダムスコア
+				}));
 
 			const prefScores: Record<string, number[]> = {};
 			for (const post of results) {
@@ -178,8 +107,8 @@ export const MapPostArea = () => {
 				}
 			</Geographies>
 			{showMarkers &&
-				posts.map((post) => (
-					<Marker key={post.ip} coordinates={post.coordinates}>
+				posts.map((post, idx) => (
+					<Marker key={`${post.ip}-${idx}`} coordinates={post.coordinates}>
 						<circle
 							r={5}
 							fill={colorScale(post.score)}
@@ -190,7 +119,7 @@ export const MapPostArea = () => {
 					</Marker>
 				))}
 		</ComposableMap>
-	);
+	); //重複するIPがあってもidxで区別
 };
 
 export default MapPostArea;
