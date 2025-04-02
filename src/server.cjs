@@ -44,6 +44,22 @@ app.post("/post-topic-and-comment", (req, res) => {
 
 	if (existingTopic) {
 		existingTopic.comments.push(comment);
+
+		// コメント数が5になったら subTopic を生成
+		if (existingTopic.comments.length === 5) {
+			existingTopic.subTopic = [
+				{
+					id: `${id}-sub1`,
+					name: `${existingTopic.name} - SubTopic 1`,
+					comments: [],
+				},
+				{
+					id: `${id}-sub2`,
+					name: `${existingTopic.name} - SubTopic 2`,
+					comments: [],
+				},
+			];
+		}
 	} else {
 		/** @type {Topic} */
 		const newTopic = {
