@@ -5,18 +5,26 @@ const cors = require("cors"); //別のポートからのリクエストを許可
 
 const app = express();
 app.use(express.json());
-// app.use(cors()); //corsを許可
 app.use(cors({ origin: "http://localhost:5173" }));
 
 const commentsDir = path.join(__dirname, "data"); //現在のディレクトリを基準にdataディレクトリを追加
 const commentsPath = path.join(commentsDir, "comments.json"); //jsonのパスを設定
+
+// Topic型の模倣
+/**
+ * @typedef {Object} Topic
+ * @property {string} id - トピックのID
+ * @property {string} name - トピック名
+ * @property {string[]} comments - コメントの配列
+ * @property {Topic[]} [subTopic] - サブトピックの配列 (オプション)
+ */
 
 // 初期化の処理
 if (!fs.existsSync(commentsDir)) {
 	fs.mkdirSync(commentsDir); //dataディレクトリが存在しない場合は作成
 }
 
-// 初期値として空の "comments" 配列を含むオブジェクトを保存
+// 初期値として空の "topics" 配列を含むオブジェクトを保存
 fs.writeFileSync(
 	commentsPath,
 	JSON.stringify({ topics: [] }, null, 2),
@@ -25,6 +33,8 @@ fs.writeFileSync(
 
 app.post("/post-topic-and-comment", (req, res) => {
 	const { id, topic, comment } = req.body;
+
+	/** @type {{ topics: Topic[] }} */
 	const data = fs.existsSync(commentsPath)
 		? JSON.parse(fs.readFileSync(commentsPath, "utf-8"))
 		: { topics: [] };
@@ -35,11 +45,13 @@ app.post("/post-topic-and-comment", (req, res) => {
 	if (existingTopic) {
 		existingTopic.comments.push(comment);
 	} else {
-		data.topics.push({
+		/** @type {Topic} */
+		const newTopic = {
 			id: id,
 			name: topic,
 			comments: [comment],
-		});
+		};
+		data.topics.push(newTopic);
 	}
 
 	fs.writeFileSync(commentsPath, JSON.stringify(data, null, 2), "utf-8");
@@ -47,6 +59,7 @@ app.post("/post-topic-and-comment", (req, res) => {
 });
 
 app.get("/get-topic-and-comment", (req, res) => {
+	/** @type {{ topics: Topic[] }} */
 	const data = fs.existsSync(commentsPath)
 		? JSON.parse(fs.readFileSync(commentsPath, "utf-8"))
 		: { topics: [] };
@@ -56,6 +69,7 @@ app.get("/get-topic-and-comment", (req, res) => {
 
 // POST: コメントを追加
 app.post("/post-comments", (req, res) => {
+	/** @type {{ topics: Topic[] }} */
 	const data = JSON.parse(fs.readFileSync(commentsPath, "utf-8"));
 	data.comments.push(req.body.comment); // req.body は文字列
 	fs.writeFileSync(commentsPath, JSON.stringify(data, null, 2), "utf-8");
@@ -64,6 +78,7 @@ app.post("/post-comments", (req, res) => {
 
 // GET: コメント取得
 app.get("/get-comments", (req, res) => {
+	/** @type {{ topics: Topic[] }} */
 	const data = fs.existsSync(commentsPath)
 		? JSON.parse(fs.readFileSync(commentsPath, "utf-8"))
 		: { comments: [] };
