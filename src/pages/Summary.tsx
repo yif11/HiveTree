@@ -86,16 +86,20 @@ export const Summary: React.FC = () => {
 					<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
 				) : (
 					<>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックID:
 							{topicId || "（トピックID取得中）"}
 						</p>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックURL:
 							{topicUrl || "（トピックURL取得中）"}
 						</p>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックタイトル:
 							{topicTitle || "（トピックタイトル取得中）"}
 						</p>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックサマリ:
 							{topicSummary || "（トピックサマリ取得中）"}
 						</p>
 					</>
