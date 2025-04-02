@@ -13,6 +13,7 @@ type postData = {
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
+	const [topicId, setTopicId] = useState("");
 	const [topicUrl, setTopicUrl] = useState("");
 	const [topicTitle, setTopicTitle] = useState("");
 	const [topicSummary, setTopicSummary] = useState("");
@@ -22,6 +23,7 @@ export const Summary: React.FC = () => {
 		"/topic",
 		async () => {
 			const topics = await getTopic();
+			setTopicId(topics.length > 0 ? topics[0].id : "No ID");
 			setTopicUrl(topics.length > 0 ? topics[0].url : "No URL");
 			setTopicTitle(topics.length > 0 ? topics[0].title : "No Title");
 			setTopicSummary(topics.length > 0 ? topics[0].summary : "No Summary");
@@ -81,6 +83,9 @@ export const Summary: React.FC = () => {
 					<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
 				) : (
 					<>
+						<p className="text-red-700 text-lg leading-relaxed">
+							{topicId || "（トピックID取得中）"}
+						</p>
 						<p className="text-red-700 text-lg leading-relaxed">
 							{topicUrl || "（トピックURL取得中）"}
 						</p>
