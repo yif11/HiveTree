@@ -6,7 +6,7 @@ import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数
 import { getTopic } from "../api/topic";
 
 type postData = {
-	id: number;
+	id: string;
 	topic: string;
 	comment: string;
 };
@@ -39,18 +39,19 @@ export const Summary: React.FC = () => {
 		async () => {
 			// const comments = await getComments();
 			const topicAndComments = await getTopicAndComments();
-			const id = topicId;
 			if (topicTitle === "") {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
-			setTopicLevel(
-				Math.min(
-					4,
-					Math.floor(topicAndComments[Number(id)].comments.length / 3),
-				),
-			);
-			return await fetchSummaryFromGemini(Number(id), topicAndComments);
+			setTopicLevel(() => {
+				const matchingTopic = topicAndComments.find(
+					(topic) => topic.id === topicId,
+				);
+				return matchingTopic
+					? Math.min(4, Math.floor(matchingTopic.comments.length / 3))
+					: 0;
+			});
+			return await fetchSummaryFromGemini(topicUrl, topicAndComments);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
@@ -64,7 +65,7 @@ export const Summary: React.FC = () => {
 	const handleCommentSubmit = async () => {
 		setComment("");
 		const postData: postData = {
-			id: Number(topicId),
+			id: topicId,
 			topic: topicTitle,
 			comment: comment,
 		};

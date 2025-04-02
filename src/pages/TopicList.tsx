@@ -10,7 +10,7 @@ export const TopicList: React.FC = () => {
 	const [topicSummary, setTopicSummary] = useState("");
 
 	const { error: topicError } = useSWR(
-		"/topic",
+		"/topic-list",
 		async () => {
 			const topics = await getTopic();
 			setTopicId(topics.length > 0 ? topics[0].id : "No ID");
