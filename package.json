@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "4.0.14",
+    "@types/react-router-dom": "5.3.3",
     "cors": "2.8.5",
     "d3-scale": "4.0.2",
     "dotenv": "16.4.7",
@@ -21,6 +22,7 @@
     "prop-types": "15.8.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-router-dom": "7.4.1",
     "react-simple-maps": "3.0.0",
     "swr": "2.3.3",
     "tailwindcss": "4.0.14"
