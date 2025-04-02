@@ -90,6 +90,51 @@ app.get("/api/geoip", async (req, res) => {
 	}
 });
 
+app.post("/api/save-ip", async (req, res) => {
+	//IP-address.jsonにIPアドレスを保存
+	const ip = req.body.ip;
+	if (!ip) return res.status(400).json({ error: "IPアドレスがありません。" });
+
+	const ip_path = path.join(__dirname, "data", "IP-address.json");
+	const ipdata = fs.existsSync(ip_path)
+		? JSON.parse(fs.readFileSync(ip_path, "utf-8"))
+		: []; //IP-address.jsonが存在しなかったら空のデータにする
+	try {
+		const geoRes = await fetch(`https://ipwho.is/${ip}`);
+		const geoData = await geoRes.json();
+		if (!geoData.success) {
+			throw new Error(geoData.message || "IP変換に失敗しました");
+		}
+		const newEntry = {
+			ip,
+			lat: geoData.latitude,
+			lon: geoData.longitude,
+		};
+		ipdata.push(newEntry);
+		fs.writeFileSync(ip_path, JSON.stringify(ipdata, null, 2), "utf-8");
+		console.log(`ipの情報を保存しました: ${ip}`);
+		res.json({ success: true, data: newEntry });
+	} catch (err) {
+		console.error(`IP取得に失敗しました [${ip}]`, err.message);
+		res.status(500).json({ success: false, error: "IP変換に失敗しました" });
+	}
+});
+
+app.get("/api/iplist-return", (req, res) => {
+	const ip_path = path.join(__dirname, "data", "IP-address.json");
+	try {
+		if (!fs.existsSync(ip_path)) {
+			//IP-address.jsonがないときは空の配列を返す
+			return res.json([]);
+		}
+		const data = JSON.parse(fs.readFileSync(ip_path, "utf-8"));
+		res.json(data);
+	} catch (err) {
+		console.error("IPリストの読み込みに失敗:", err);
+		res.status(500).json({ error: "IPリストの読み込み失敗" });
+	}
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`);
