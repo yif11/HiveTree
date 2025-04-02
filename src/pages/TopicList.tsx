@@ -1,25 +1,16 @@
 import type React from "react";
-import { useState } from "react";
+// import { useState } from "react";
 import useSWR from "swr";
 import { getTopic } from "../api/topic";
 
 export const TopicList: React.FC = () => {
-	const [topicId, setTopicId] = useState("");
-	const [topicUrl, setTopicUrl] = useState("");
-	const [topicTitle, setTopicTitle] = useState("");
-	const [topicSummary, setTopicSummary] = useState("");
-
-	const { error: topicError } = useSWR(
+	const { data: topics, error: topicError } = useSWR(
 		"/topic-list",
 		async () => {
-			const topics = await getTopic();
-			setTopicId(topics.length > 0 ? topics[0].id : "No ID");
-			setTopicUrl(topics.length > 0 ? topics[0].url : "No URL");
-			setTopicTitle(topics.length > 0 ? topics[0].title : "No Title");
-			setTopicSummary(topics.length > 0 ? topics[0].summary : "No Summary");
+			return await getTopic();
 		},
 		{
-			refreshInterval: 3600000, // 3600秒ごとにポーリング
+			// refreshInterval: 3600000, // 3600秒ごとにポーリング
 		},
 	);
 
@@ -30,32 +21,53 @@ export const TopicList: React.FC = () => {
 				🌟 Topic List
 			</h1>
 
-			{/* トピック表示 */}
-			<div className="topic bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-				<h2 className="text-2xl font-semibold text-gray-700 mb-2">📌 Topic</h2>
-				{topicError ? (
-					<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
-				) : (
-					<>
-						<p className="text-black text-lg leading-relaxed">
-							トピックID:
-							{topicId || "（トピックID取得中）"}
-						</p>
-						<p className="text-black text-lg leading-relaxed">
-							トピックURL:
-							{topicUrl || "（トピックURL取得中）"}
-						</p>
-						<p className="text-black text-lg leading-relaxed">
-							トピックタイトル:
-							{topicTitle || "（トピックタイトル取得中）"}
-						</p>
-						<p className="text-black text-lg leading-relaxed">
-							トピックサマリ:
-							{topicSummary || "（トピックサマリ取得中）"}
-						</p>
-					</>
-				)}
-			</div>
+			{topicError ? (
+				<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
+			) : !topics ? (
+				<p>Loading topics...</p>
+			) : (
+				<div className="mt-4">
+					{topics.map((topic) => (
+						<div
+							key={topic.id}
+							className="topic bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 mb-4 cursor-pointer"
+							onClick={() => {
+								sessionStorage.setItem("topic", JSON.stringify(topic));
+								window.location.href = "/summary";
+							}}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									sessionStorage.setItem("topic", JSON.stringify(topic));
+									window.location.href = "/summary";
+								}
+							}}
+						>
+							<a
+								href="/summary"
+								onClick={() =>
+									sessionStorage.setItem("topic", JSON.stringify(topic))
+								}
+							>
+								<h2 className="text-2xl font-semibold text-gray-700 mb-2 hover:text-blue-500">
+									{topic.title}
+								</h2>
+							</a>
+							<p className="text-black text-lg leading-relaxed">
+								トピックID: {topic.id}
+							</p>
+							<p className="text-black text-lg leading-relaxed">
+								トピックURL: {topic.url}
+							</p>
+							<p className="text-black text-lg leading-relaxed">
+								トピックタイトル: {topic.title}
+							</p>
+							<p className="text-black text-lg leading-relaxed">
+								トピックサマリ: {topic.summary}
+							</p>
+						</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 };
