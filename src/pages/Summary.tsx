@@ -39,16 +39,18 @@ export const Summary: React.FC = () => {
 		async () => {
 			// const comments = await getComments();
 			const topicAndComments = await getTopicAndComments();
-			const id = 0; // トピックID（仮）
-			// const topic = "天気";
+			const id = topicId;
 			if (topicTitle === "") {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
 			setTopicLevel(
-				Math.min(4, Math.floor(topicAndComments[id].comments.length / 3)),
+				Math.min(
+					4,
+					Math.floor(topicAndComments[Number(id)].comments.length / 3),
+				),
 			);
-			return await fetchSummaryFromGemini(id, topicAndComments);
+			return await fetchSummaryFromGemini(Number(id), topicAndComments);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
@@ -62,7 +64,7 @@ export const Summary: React.FC = () => {
 	const handleCommentSubmit = async () => {
 		setComment("");
 		const postData: postData = {
-			id: 0, // トピックID（仮）
+			id: Number(topicId),
 			topic: topicTitle,
 			comment: comment,
 		};
