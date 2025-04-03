@@ -8,7 +8,7 @@ const App: React.FC = () => {
 	return (
 		<Router>
 			<div>
-				<nav>
+				{/* <nav>
 					<ul>
 						<li>
 							<Link to="/" className="font-bold">
@@ -26,7 +26,7 @@ const App: React.FC = () => {
 							</Link>
 						</li>
 					</ul>
-				</nav>
+				</nav> */}
 
 				{/* ルーティングの設定 */}
 				<Routes>
