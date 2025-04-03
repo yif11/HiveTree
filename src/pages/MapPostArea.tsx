@@ -4,6 +4,7 @@ import type { Feature } from "geojson";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { SavedIPEntry, getSavedIPs } from "../api/api";
+import { getPrefectureSentiment } from "../api/api";
 
 import {
 	ComposableMap,
@@ -16,25 +17,17 @@ import { feature } from "topojson-client";
 const geoUrl = "/japan.topojson";
 
 const colorScale = scaleLinear<string>()
-	.domain([-0.5, 0, 0.5])
+	.domain([-1, 0, 1])
 	.range(["#ff3333", "#ffffff", "#3333ff"])
 	.clamp(true);
 
-type Post = {
-	ip: string;
-	coordinates: [number, number];
-	score: number;
-};
-
-export const MapPostArea = () => {
-	const [posts, setPosts] = useState<Post[]>([]);
+export const MapPostArea: React.FC<{ topicId: string }> = ({ topicId }) => {
 	const [prefectureScores, setPrefectureScores] = useState<
 		Record<string, number>
 	>({});
 	const [geoFeatures, setGeoFeatures] = useState<
 		Feature<GeoPermissibleObjects>[]
 	>([]);
-	const [showMarkers] = useState(true);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -43,39 +36,24 @@ export const MapPostArea = () => {
 			const features = feature(data, data.objects.japan)
 				.features as Feature<GeoPermissibleObjects>[];
 			setGeoFeatures(features);
+			const sentimentData = await getPrefectureSentiment();
+			//const topicSentiment=sentimentData[topicId]; // specify topic id
+			const topicSentiment =
+				sentimentData["f574dc8c-7604-43ed-9a1b-58d45554c9b3"]; // specify topic id
 
-			const ipData = await getSavedIPs(); // すでに緯度経度が入ってるやつを取得
-			const results: Post[] = ipData
-				.filter((entry) => entry.lat && entry.lon)
-				.map((entry) => ({
-					ip: entry.ip,
-					coordinates: [entry.lon, entry.lat],
-					score: Math.random() * 2 - 1, // ←仮のランダムスコア
-				}));
-
-			const prefScores: Record<string, number[]> = {};
-			for (const post of results) {
-				const matched = features.find((geo: Feature<GeoPermissibleObjects>) =>
-					geoContains(geo, post.coordinates),
-				);
-				if (matched) {
-					const prefCode = `JP-${String(matched.properties.id).padStart(2, "0")}`;
-					if (!prefScores[prefCode]) {
-						prefScores[prefCode] = [];
-					}
-					prefScores[prefCode].push(post.score);
+			if (topicSentiment) {
+				const avgScores: Record<string, number> = {};
+				for (const prefCode in topicSentiment) {
+					const { positive, neutral, negative } = topicSentiment[prefCode];
+					const total = positive + neutral + negative;
+					const score = total === 0 ? 0 : (positive - negative) / total;
+					avgScores[prefCode] = score;
+					console.log(
+						`\u90fd\u9053\u5e9c\u770c ${prefCode} \u306e\u30b9\u30b3\u30a2: ${score}`,
+					);
 				}
+				setPrefectureScores(avgScores);
 			}
-
-			const avgScores: Record<string, number> = {};
-			for (const code in prefScores) {
-				const values = prefScores[code];
-				avgScores[code] = values.reduce((a, b) => a + b, 0) / values.length;
-				console.log(`都道府県 ${code} の平均スコア: ${avgScores[code]}`);
-			}
-
-			setPosts(results);
-			setPrefectureScores(avgScores);
 		};
 
 		fetchData();
@@ -106,18 +84,6 @@ export const MapPostArea = () => {
 					})
 				}
 			</Geographies>
-			{showMarkers &&
-				posts.map((post, idx) => (
-					<Marker key={`${post.ip}-${idx}`} coordinates={post.coordinates}>
-						<circle
-							r={5}
-							fill={colorScale(post.score)}
-							stroke="#fff"
-							strokeWidth={1}
-						/>
-						<title>{post.ip}</title>
-					</Marker>
-				))}
 		</ComposableMap>
 	); //重複するIPがあってもidxで区別
 };
