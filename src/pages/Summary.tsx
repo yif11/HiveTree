@@ -31,6 +31,9 @@ export const Summary: React.FC = () => {
 	const [matchingComments, setMatchingComment] = useState<string[] | null>(
 		null,
 	);
+	const topicId = topic?.id || "no-topic";
+	const topicTitle = topic?.title || "No Title";
+
 	// const [summary, setSummary] = useState<string | null>(null);
 	// const [summaryError, setSummaryError] = useState<Error | null>(null);
 
