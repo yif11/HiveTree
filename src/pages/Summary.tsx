@@ -5,6 +5,7 @@ import { getTopicAndComments, postTopicAndComment } from "../api/api";
 import { postUserIP } from "../api/api";
 import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数のインポート
 import { getTopic } from "../api/topic";
+import MapPostArea from "./MapPostArea";
 
 type postData = {
 	id: string;
@@ -76,8 +77,25 @@ export const Summary: React.FC = () => {
 			//IPアドレスを取得してサーバに送信する
 			const response = await fetch("https://api.ipify.org?format=json");
 			const data = await response.json();
-			await postUserIP(data.ip);
+			const ip = data.ip;
+			//await postUserIP(data.ip);
 			console.log(`Send IP: ${data.ip}!!`);
+			const res = await fetch("http://localhost:5000/api/update-sentiment", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					topicId: topicId,
+					topicContent: topicTitle,
+					comment: comment,
+					ipAddr: ip,
+				}),
+			});
+			if (!res.ok) {
+				const err = await res.json();
+				console.error("Sentimentの更新に失敗しました:", err.error);
+			} else {
+				console.log("Sentimentが更新されました");
+			}
 		} catch (error) {
 			console.error("Failed to fetch or send user IP:", error);
 		}
@@ -153,6 +171,7 @@ export const Summary: React.FC = () => {
 					</p>
 				)}
 			</div>
+			<MapPostArea topicId={topicId} />
 		</div>
 	);
 };
