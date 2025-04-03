@@ -1,4 +1,5 @@
-const express = require("express");
+import { makeSubTopicFromUSRL } from "./api/gemini"; //geminiからサブトピックを取得するための関数をインポート
+express = require("express");
 const fs = require("fs"); //ファイル操作用
 const path = require("path");
 const cors = require("cors"); //別のポートからのリクエストを許可するためのミドルウェア
@@ -55,6 +56,7 @@ app.post("/post-topic-and-comment", (req, res) => {
 			(async () => {
 				try {
 					const subTopicNames = await makeSubTopicFromUSRL(topicName);
+					console.log("Subtopic names:", subTopicNames);
 					existingTopic.subTopic = [
 						{
 							id: `${id}-sub1`,
