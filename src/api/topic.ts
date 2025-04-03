@@ -3,7 +3,13 @@ import commentsData from "../data/comments.json";
 import { summarizeArticleFromURL } from "./gemini";
 
 export async function getTopic(): Promise<
-	{ id: string; url: string; title: string; summary: string }[]
+	{
+		id: string;
+		url: string;
+		title: string;
+		summary: string;
+		subtopics: { id: string; title: string; summary: string }[];
+	}[]
 > {
 	try {
 		// API URL
@@ -53,6 +59,7 @@ export async function getTopic(): Promise<
 				url: url,
 				title: title,
 				summary: topicSummary,
+				subtopics: [],
 			},
 		];
 
@@ -67,7 +74,12 @@ export async function getTopic(): Promise<
 				id: topic.id,
 				url: "",
 				title: topic.name,
-				summary: "",
+				summary: topic.comments.join(", "),
+				subtopics: topic.subTopic.map((sub) => ({
+					id: sub.id,
+					title: sub.name,
+					summary: sub.comments.join(", "),
+				})),
 			}),
 		);
 

@@ -13,7 +13,13 @@ type postData = {
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
-	const [topic, setTopic] = useState({
+	const [topic, setTopic] = useState<{
+		id: string;
+		url: string;
+		title: string;
+		summary: string;
+		subtopics?: { id: string; title: string; summary: string }[];
+	} | null>({
 		id: "No ID",
 		url: "No URL",
 		title: "No Title",
@@ -37,8 +43,11 @@ export const Summary: React.FC = () => {
 			}
 
 			// const comments = await getComments();
+			if (!topic) {
+				throw new Error("No topic selected");
+			}
 			const topicAndComments = await getTopicAndComments(topic.id);
-			if (topic.title === "") {
+			if (!topic.title) {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
@@ -78,8 +87,8 @@ export const Summary: React.FC = () => {
 	const handleCommentSubmit = async () => {
 		setComment("");
 		const postData: postData = {
-			id: topic.id,
-			topic: topic.title,
+			id: topic ? topic.id : "no-topic",
+			topic: topic ? topic.title : "no-topic",
 			comment: comment,
 		};
 		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
@@ -109,19 +118,19 @@ export const Summary: React.FC = () => {
 				<>
 					<p className="text-black text-lg leading-relaxed">
 						トピックID:
-						{topic.id || "（トピックID取得中）"}
+						{topic ? topic.id : "（トピックID取得中）"}
 					</p>
 					<p className="text-black text-lg leading-relaxed">
 						トピックURL:
-						{topic.url || "（トピックURL取得中）"}
+						{topic ? topic.url : "（トピックURL取得中）"}
 					</p>
 					<p className="text-black text-lg leading-relaxed">
 						トピックタイトル:
-						{topic.title || "（トピックタイトル取得中）"}
+						{topic ? topic.title : "（トピックタイトル取得中）"}
 					</p>
 					<p className="text-black text-lg leading-relaxed">
 						トピックサマリ:
-						{topic.summary || "（トピックサマリ取得中）"}
+						{topic ? topic.summary : "（トピックサマリ取得中）"}
 					</p>
 				</>
 			</div>

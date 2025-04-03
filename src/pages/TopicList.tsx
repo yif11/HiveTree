@@ -32,6 +32,7 @@ export const TopicList: React.FC = () => {
 							url: string;
 							title: string;
 							summary: string;
+							subtopics: { id: string; title: string; summary: string }[];
 						}) => (
 							<div
 								key={topic.id}
@@ -69,6 +70,45 @@ export const TopicList: React.FC = () => {
 								<p className="text-black text-lg leading-relaxed">
 									トピックサマリ: {topic.summary}
 								</p>
+								{topic.subtopics?.map((subtopic) => (
+									<div
+										key={subtopic.id}
+										className="subtopic bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 mb-2 ml-4 cursor-pointer"
+										onClick={() => {
+											sessionStorage.setItem("topic", JSON.stringify(subtopic));
+											window.location.href = "/summary";
+										}}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												sessionStorage.setItem(
+													"topic",
+													JSON.stringify(subtopic),
+												);
+												window.location.href = "/summary";
+											}
+										}}
+									>
+										<a
+											href="/summary"
+											onClick={() =>
+												sessionStorage.setItem(
+													"topic",
+													JSON.stringify(subtopic),
+												)
+											}
+										>
+											<h3 className="text-xl font-semibold text-gray-600 mb-1 hover:text-blue-500">
+												{subtopic.title}
+											</h3>
+										</a>
+										<p className="text-black text-lg leading-relaxed">
+											サブトピックID: {subtopic.id}
+										</p>
+										<p className="text-black text-lg leading-relaxed">
+											サブトピックサマリ: {subtopic.summary}
+										</p>
+									</div>
+								))}
 							</div>
 						),
 					)}
