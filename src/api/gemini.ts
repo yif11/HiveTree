@@ -72,3 +72,45 @@ export async function summarizeArticleFromURL(
 		data.candidates?.[0]?.content?.parts?.[0]?.text ?? "要約に失敗しました"
 	);
 }
+
+export async function makeSubTopicFromURL(
+	topicName: string, //トピック名を指定
+	topics: { name: string; comments: string[] }[],
+): Promise<string> {
+	const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
+	const apiUrl = import.meta.env.VITE_GEMINI_API_URL as string;
+
+	const targetTopic = topics.find((topic) => topic.name === topicName);
+	if (!targetTopic) {
+		throw new Error(`Topic "${topicName}" not found`);
+	}
+
+	const prompt = `
+あなたは優秀な要約AIです。
+以下のトピック「${topicName}」に対する複数の投稿があります。
+このコメントから、サブトピックを2つ派生させ、サブトピックのみを出力、その際にサブトピックごとに、改行して表示してください
+投稿：
+${targetTopic.comments.map((p, i) => `投稿${i + 1}：${p}`).join("\n")}
+サブトピック:
+`;
+
+	const response = await fetch(`${apiUrl}?key=${apiKey}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			contents: [
+				{
+					parts: [{ text: prompt }],
+				},
+			],
+		}),
+	});
+
+	const data = await response.json();
+	return (
+		data.candidates?.[0]?.content?.parts?.[0]?.text ??
+		"サブトピックの取得に失敗しました"
+	);
+}
