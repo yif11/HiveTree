@@ -47,18 +47,39 @@ app.post("/post-topic-and-comment", (req, res) => {
 
 		// コメント数が5になったら subTopic を生成
 		if (existingTopic.comments.length === 5) {
-			existingTopic.subTopic = [
-				{
-					id: `${id}-sub1`,
-					name: `${existingTopic.name} - SubTopic 1`,
-					comments: [],
-				},
-				{
-					id: `${id}-sub2`,
-					name: `${existingTopic.name} - SubTopic 2`,
-					comments: [],
-				},
-			];
+			//サブトピックを生成するために、makeSubTopicFromUSRLを呼び出す
+			const topics = data.topics;
+			const topicName = existingTopic.name;
+			(async () => {
+				try {
+					const subTopicNames = await makeSubTopicFromUSRL(topicName);
+					existingTopic.subTopic = [
+						{
+							id: `${id}-sub1`,
+							name:
+								subTopicNames.split("\n")[0] ||
+								`${existingTopic.name} - SubTopic 1`,
+							comments: [],
+						},
+						{
+							id: `${id}-sub2`,
+							name:
+								subTopicNames.split("\n")[1] ||
+								`${existingTopic.name} - SubTopic 2`,
+							comments: [],
+						},
+					];
+
+					//更新されたデータを保存
+					fs.writeFileSync(
+						commentsPath,
+						JSON.stringify(data, null, 2),
+						"utf-8",
+					);
+				} catch (error) {
+					console.error("Error generating subtopics:", error);
+				}
+			})();
 		}
 	} else {
 		/** @type {Topic} */
