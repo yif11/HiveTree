@@ -7,8 +7,8 @@ export async function fetchSummaryFromGemini(
 
 	const prompt = `
 あなたは優秀な要約AIです。
-以下のトピック「${topicUrl}」に関する複数人の投稿があります。
-それらを1つの要約文にしてください。
+トピック「${topicUrl}」に関する複数人の投稿があります。
+このトピックのURLにアクセスして記事を読み、複数人の投稿を1つの要約文にしてください。
 
 投稿：
 ${topics.flatMap((topic) => topic.comments.map((p, i) => `投稿${i + 1}：${p}`)).join("\n")}

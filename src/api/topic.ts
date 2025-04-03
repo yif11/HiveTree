@@ -1,8 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
+import commentsData from "../data/comments.json";
 import { summarizeArticleFromURL } from "./gemini";
 
 export async function getTopic(): Promise<
-	{ id: string; url: string; title: string; summary: string }[]
+	{
+		id: string;
+		url: string;
+		title: string;
+		summary: string;
+		subtopics: { id: string; title: string; summary: string }[];
+	}[]
 > {
 	try {
 		// API URL
@@ -46,14 +53,38 @@ export async function getTopic(): Promise<
 		const topicSummary = await summarizeArticleFromURL(url, title);
 		const id = uuidv4();
 
-		return [
+		const apiTopics = [
 			{
 				id: id,
 				url: url,
 				title: title,
 				summary: topicSummary,
+				subtopics: [],
 			},
 		];
+
+		// topics.jsonからトピックをロード
+		const commentTopics = commentsData.topics.map(
+			(topic: {
+				id: string;
+				name: string;
+				comments: string[];
+				subTopic: { id: string; name: string; comments: never[] }[];
+			}) => ({
+				id: topic.id,
+				url: "",
+				title: topic.name,
+				summary: topic.comments.join(", "),
+				subtopics: topic.subTopic.map((sub) => ({
+					id: sub.id,
+					title: sub.name,
+					summary: sub.comments.join(", "),
+				})),
+			}),
+		);
+
+		// APIとtopics.jsonからのトピックを結合
+		return [...apiTopics, ...commentTopics];
 	} catch (error) {
 		console.error("Error fetching topics:", error);
 		return [];
