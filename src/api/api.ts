@@ -124,3 +124,16 @@ export const getSavedIPs = async (): Promise<SavedIPEntry[]> => {
 	const res = await fetch("http://localhost:5000/api/iplist-return");
 	return await res.json();
 };
+
+export async function getPrefectureSentiment(): Promise<{
+	[topicId: string]: {
+		[prefCode: string]: {
+			positive: number;
+			neutral: number;
+			negative: number;
+		};
+	};
+}> {
+	const res = await fetch("http://localhost:5000/api/get-prefecture-sentiment");
+	return await res.json();
+}
