@@ -50,6 +50,8 @@ app.post("/post-topic-and-comment", (req, res) => {
 			//サブトピックを生成するために、makeSubTopicFromUSRLを呼び出す
 			const topics = data.topics;
 			const topicName = existingTopic.name;
+
+			//非同期処理を行うために、async/awaitを使用
 			(async () => {
 				try {
 					const subTopicNames = await makeSubTopicFromUSRL(topicName);
@@ -58,14 +60,14 @@ app.post("/post-topic-and-comment", (req, res) => {
 							id: `${id}-sub1`,
 							name:
 								subTopicNames.split("\n")[0] ||
-								`${existingTopic.name} - SubTopic 1`,
+								`${existingTopic.name} - SubTopic 1`, //geminiから取得したサブトピック名
 							comments: [],
 						},
 						{
 							id: `${id}-sub2`,
 							name:
 								subTopicNames.split("\n")[1] ||
-								`${existingTopic.name} - SubTopic 2`,
+								`${existingTopic.name} - SubTopic 2`, //geminiから取得したサブトピック名
 							comments: [],
 						},
 					];
