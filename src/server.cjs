@@ -1,8 +1,53 @@
-import { makeSubTopicFromUSRL } from "./api/gemini"; //geminiからサブトピックを取得するための関数をインポート
-express = require("express");
+const express = require("express");
 const fs = require("fs"); //ファイル操作用
 const path = require("path");
 const cors = require("cors"); //別のポートからのリクエストを許可するためのミドルウェア
+
+//geminiのAPIを使用するための関数を定義
+require("dotenv").config();
+
+async function makeSubTopicFromURL(topicName, topics) {
+	const apiKey = process.env.VITE_GEMINI_API_KEY;
+	const apiUrl = process.env.VITE_GEMINI_API_URL;
+
+	if (!apiKey || !apiUrl) {
+		throw new Error("APIキーまたはURLが設定されていません。");
+	}
+
+	const targetTopic = topics.find((topic) => topic.name === topicName);
+	if (!targetTopic) {
+		throw new Error(`Topic "${topicName}" not found`);
+	}
+
+	const prompt = `
+あなたは優秀な要約AIです。
+以下のトピック「${topicName}」に対する複数の投稿があります。
+このコメントから、サブトピックを2つ派生させ、サブトピックのみを出力、その際にサブトピックごとに、改行して表示してください
+投稿：
+${targetTopic.comments.map((p, i) => `投稿${i + 1}：${p}`).join("\n")}
+サブトピック:
+`;
+
+	const response = await fetch(`${apiUrl}?key=${apiKey}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			contents: [
+				{
+					parts: [{ text: prompt }],
+				},
+			],
+		}),
+	});
+
+	const data = await response.json();
+	return (
+		data.candidates?.[0]?.content?.parts?.[0]?.text ??
+		"サブトピックの取得に失敗しました"
+	);
+}
 
 const app = express();
 app.use(express.json());
@@ -55,7 +100,7 @@ app.post("/post-topic-and-comment", (req, res) => {
 			//非同期処理を行うために、async/awaitを使用
 			(async () => {
 				try {
-					const subTopicNames = await makeSubTopicFromUSRL(topicName);
+					const subTopicNames = await makeSubTopicFromURL(topicName, topics);
 					console.log("Subtopic names:", subTopicNames);
 					existingTopic.subTopic = [
 						{
