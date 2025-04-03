@@ -1,7 +1,8 @@
+import { v4 as uuidv4 } from "uuid";
 import { summarizeArticleFromURL } from "./gemini";
 
 export async function getTopic(): Promise<
-	{ url: string; title: string; summary: string }[]
+	{ id: string; url: string; title: string; summary: string }[]
 > {
 	try {
 		// API URL
@@ -43,10 +44,11 @@ export async function getTopic(): Promise<
 		const title = firstItem.title || "No Title";
 
 		const topicSummary = await summarizeArticleFromURL(url, title);
-		// console.log("Topic summary:", topicSummary);
+		const id = uuidv4();
 
 		return [
 			{
+				id: id,
 				url: url,
 				title: title,
 				summary: topicSummary,

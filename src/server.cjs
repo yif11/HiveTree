@@ -37,7 +37,7 @@ app.post("/post-topic-and-comment", (req, res) => {
 		existingTopic.comments.push(comment);
 	} else {
 		data.topics.push({
-			id,
+			id: id,
 			name: topic,
 			comments: [comment],
 		});

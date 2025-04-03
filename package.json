@@ -13,7 +13,6 @@
     "@tailwindcss/vite": "4.0.14",
     "@types/react-router-dom": "5.3.3",
     "cors": "2.8.5",
-    "d3-scale": "4.0.2",
     "dotenv": "16.4.7",
     "express": "4.21.2",
     "fs": "0.0.1-security",
@@ -25,7 +24,8 @@
     "react-router-dom": "7.4.1",
     "react-simple-maps": "3.0.0",
     "swr": "2.3.3",
-    "tailwindcss": "4.0.14"
+    "tailwindcss": "4.0.14",
+    "uuid": "11.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

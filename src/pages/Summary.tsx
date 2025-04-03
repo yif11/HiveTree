@@ -7,13 +7,14 @@ import { fetchSummaryFromGemini } from "../api/gemini"; // 追加：Gemini関数
 import { getTopic } from "../api/topic";
 
 type postData = {
-	id: number;
+	id: string;
 	topic: string;
 	comment: string;
 };
 
 export const Summary: React.FC = () => {
 	const [comment, setComment] = useState("");
+	const [topicId, setTopicId] = useState("");
 	const [topicUrl, setTopicUrl] = useState("");
 	const [topicTitle, setTopicTitle] = useState("");
 	const [topicSummary, setTopicSummary] = useState("");
@@ -23,6 +24,7 @@ export const Summary: React.FC = () => {
 		"/topic",
 		async () => {
 			const topics = await getTopic();
+			setTopicId(topics.length > 0 ? topics[0].id : "No ID");
 			setTopicUrl(topics.length > 0 ? topics[0].url : "No URL");
 			setTopicTitle(topics.length > 0 ? topics[0].title : "No Title");
 			setTopicSummary(topics.length > 0 ? topics[0].summary : "No Summary");
@@ -38,16 +40,19 @@ export const Summary: React.FC = () => {
 		async () => {
 			// const comments = await getComments();
 			const topicAndComments = await getTopicAndComments();
-			const id = 0; // トピックID（仮）
-			// const topic = "天気";
 			if (topicTitle === "") {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
-			setTopicLevel(
-				Math.min(4, Math.floor(topicAndComments[id].comments.length / 3)),
-			);
-			return await fetchSummaryFromGemini(id, topicAndComments);
+			setTopicLevel(() => {
+				const matchingTopic = topicAndComments.find(
+					(topic) => topic.id === topicId,
+				);
+				return matchingTopic
+					? Math.min(4, Math.floor(matchingTopic.comments.length / 3))
+					: 0;
+			});
+			return await fetchSummaryFromGemini(topicUrl, topicAndComments);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング
@@ -61,7 +66,7 @@ export const Summary: React.FC = () => {
 	const handleCommentSubmit = async () => {
 		setComment("");
 		const postData: postData = {
-			id: 0, // トピックID（仮）
+			id: topicId,
 			topic: topicTitle,
 			comment: comment,
 		};
@@ -92,13 +97,20 @@ export const Summary: React.FC = () => {
 					<p className="text-red-600">⚠️ トピックの取得に失敗しました。</p>
 				) : (
 					<>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックID:
+							{topicId || "（トピックID取得中）"}
+						</p>
+						<p className="text-black text-lg leading-relaxed">
+							トピックURL:
 							{topicUrl || "（トピックURL取得中）"}
 						</p>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックタイトル:
 							{topicTitle || "（トピックタイトル取得中）"}
 						</p>
-						<p className="text-red-700 text-lg leading-relaxed">
+						<p className="text-black text-lg leading-relaxed">
+							トピックサマリ:
 							{topicSummary || "（トピックサマリ取得中）"}
 						</p>
 					</>

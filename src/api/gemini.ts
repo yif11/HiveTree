@@ -1,5 +1,5 @@
 export async function fetchSummaryFromGemini(
-	id: number,
+	topicUrl: string,
 	topics: { name: string; comments: string[] }[],
 ): Promise<string> {
 	const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
@@ -7,11 +7,11 @@ export async function fetchSummaryFromGemini(
 
 	const prompt = `
 あなたは優秀な要約AIです。
-以下のトピック「${topics[id].name}」に関する複数人の投稿があります。
+以下のトピック「${topicUrl}」に関する複数人の投稿があります。
 それらを1つの要約文にしてください。
 
 投稿：
-${topics[id].comments.map((p, i) => `投稿${i + 1}：${p}`).join("\n")}
+${topics.flatMap((topic) => topic.comments.map((p, i) => `投稿${i + 1}：${p}`)).join("\n")}
 
 要約：
   `;
