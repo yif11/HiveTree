@@ -36,7 +36,7 @@ export const postTopicAndComment = async (postData: {
 	return data;
 };
 
-export const getTopicAndComments = async () => {
+export const getTopicAndComments = async (topicId: string) => {
 	try {
 		const response = await fetch(`${apiUrl}/get-topic-and-comment`);
 		if (!response.ok) {
@@ -51,11 +51,16 @@ export const getTopicAndComments = async () => {
 		// return data.map((item) =>
 		// 	typeof item === "object" && item.comment ? item.comment : item,
 		// );
-		return data.map((item) =>
-			typeof item === "object" && item.comments && item.topic
-				? { id: item.id, topic: item.topic, comments: item.comments }
-				: item,
-		);
+		return data
+			.map((item) =>
+				typeof item === "object" && item.comments && item.topic
+					? { id: item.id, topic: item.topic, comments: item.comments }
+					: item,
+			)
+			.filter(
+				(item: { id: string; topic: string; comments: string[] }) =>
+					item.id === topicId,
+			);
 	} catch (error) {
 		console.error("Failed to fetch topic and comments:", error);
 		throw error;

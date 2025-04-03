@@ -37,7 +37,7 @@ export const Summary: React.FC = () => {
 			}
 
 			// const comments = await getComments();
-			const topicAndComments = await getTopicAndComments();
+			const topicAndComments = await getTopicAndComments(topic.id);
 			if (topic.title === "") {
 				throw new Error("トピックが取得できていません");
 			}
@@ -62,12 +62,9 @@ export const Summary: React.FC = () => {
 			// return await fetchSummaryFromGemini(topic.url, topicAndComments);
 			// console.log("matchingComment", matchingComment);
 			console.log("topic.url", topic.url);
-			return await fetchSummaryFromGemini(
-				topic.url,
-				matchingComments
-					? [{ name: topic.title, comments: matchingComments }]
-					: [],
-			);
+			return await fetchSummaryFromGemini(topic.url, [
+				{ name: topic.title, comments: matchingComments || [] },
+			]);
 		},
 		{
 			refreshInterval: 10000, // 10秒ごとにポーリング

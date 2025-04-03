@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import commentsData from "../data/comments.json";
 import { summarizeArticleFromURL } from "./gemini";
 
 export async function getTopic(): Promise<
@@ -46,7 +47,7 @@ export async function getTopic(): Promise<
 		const topicSummary = await summarizeArticleFromURL(url, title);
 		const id = uuidv4();
 
-		return [
+		const apiTopics = [
 			{
 				id: id,
 				url: url,
@@ -54,6 +55,24 @@ export async function getTopic(): Promise<
 				summary: topicSummary,
 			},
 		];
+
+		// topics.jsonからトピックをロード
+		const commentTopics = commentsData.topics.map(
+			(topic: {
+				id: string;
+				name: string;
+				comments: string[];
+				subTopic: { id: string; name: string; comments: never[] }[];
+			}) => ({
+				id: topic.id,
+				url: "",
+				title: topic.name,
+				summary: "",
+			}),
+		);
+
+		// APIとtopics.jsonからのトピックを結合
+		return [...apiTopics, ...commentTopics];
 	} catch (error) {
 		console.error("Error fetching topics:", error);
 		return [];
