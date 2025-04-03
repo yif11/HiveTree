@@ -23,16 +23,12 @@ const LP = () => {
 					backgroundColor: "#f2f9f2",
 				}}
 			>
-				<img
-					src={treeImage}
-					alt="Tree Graphic"
-					style={{ maxWidth: "40%" }}
-				/>
+				<img src={treeImage} alt="Tree Graphic" style={{ maxWidth: "40%" }} />
 				<div>
 					<p style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
 						あなたのひとりごとが、社会の声になる。
 					</p>
-					<h1 style={{ fontSize: "3rem", fontWeight: "bold" }}>APP NAME</h1>
+					<h1 style={{ fontSize: "3rem", fontWeight: "bold" }}>HiveTree</h1>
 					<button
 						style={{
 							backgroundColor: "#4a84c0",
@@ -68,7 +64,7 @@ const LP = () => {
 					言いたいけど言えない。つぶやきたいけど届かない。
 				</h2>
 				<p style={{ marginTop: "1rem", fontSize: "1.2rem", maxWidth: "600px" }}>
-					APP NAMEは、そんな“もどかしさ”を解消する新しいSNSです。
+					HiveTreeは、そんな“もどかしさ”を解消する新しいSNSです。
 				</p>
 			</section>
 
@@ -82,8 +78,10 @@ const LP = () => {
 					backgroundColor: "#f2f9f2",
 				}}
 			>
-				<h2 style={{ fontSize: "2rem", fontWeight: "bold", textAlign: "center" }}>
-					APP NAMEの2つの機能
+				<h2
+					style={{ fontSize: "2rem", fontWeight: "bold", textAlign: "center" }}
+				>
+					HiveTreeの2つの機能
 				</h2>
 
 				<div
@@ -124,11 +122,8 @@ const LP = () => {
 
 export default LP;
 
-
-
 // import React from "react";
 // import treeImage from "./tree-image.png";
-
 
 // const LP = () => {
 // 	return (
