@@ -86,9 +86,13 @@ export const Summary: React.FC = () => {
 
 	const handleCommentSubmit = async () => {
 		setComment("");
+		const currentSubtopicData = sessionStorage.getItem("currentSubtopic");
+		const topicId = currentSubtopicData
+			? JSON.parse(currentSubtopicData).id
+			: topic?.id;
 		const postData: postData = {
-			id: topic ? topic.id : "no-topic",
-			topic: topic ? topic.title : "no-topic",
+			id: topicId ? topicId : "no-topic",
+			topic: topic ? topic.title : "no-topic", // Still using topic.title as the title might be useful
 			comment: comment,
 		};
 		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
@@ -97,12 +101,16 @@ export const Summary: React.FC = () => {
 	// TopicListから渡されたトピック情報を受け取る
 	// Summaryコンポーネントがマウントされたときに一度だけ実行
 	useEffect(() => {
+		const subtopicData = sessionStorage.getItem("currentSubtopic");
 		const topicData = sessionStorage.getItem("topic");
-		if (topicData) {
+		if (subtopicData) {
+			const parsedSubtopic = JSON.parse(subtopicData);
+			setTopic(parsedSubtopic);
+		} else if (topicData) {
 			const parsedTopic = JSON.parse(topicData);
 			setTopic(parsedTopic);
 		}
-	}, []); // 空の依存配列でマウント時のみ実行
+	}, []);
 
 	return (
 		// メインコンテナ

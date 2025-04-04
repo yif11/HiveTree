@@ -86,7 +86,10 @@ export const TopicList: React.FC = () => {
 										key={subtopic.id}
 										className="subtopic bg-gray-100 p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 mb-2 ml-4 cursor-pointer"
 										onClick={() => {
-											sessionStorage.setItem("topic", JSON.stringify(subtopic));
+											sessionStorage.setItem(
+												"currentSubtopic",
+												JSON.stringify(subtopic),
+											);
 											window.location.href = "/summary";
 										}}
 										onKeyDown={(e) => {

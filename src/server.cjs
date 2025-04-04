@@ -101,7 +101,7 @@ app.post("/post-topic-and-comment", (req, res) => {
 			(async () => {
 				try {
 					const subTopicNames = await makeSubTopicFromURL(topicName, topics);
-					console.log("Subtopic names:", subTopicNames);
+					// console.log("Subtopic names:", subTopicNames);
 					existingTopic.subTopic = [
 						{
 							id: `${id}-sub1`,
