@@ -36,23 +36,34 @@ export const Summary: React.FC = () => {
 	const { data: summary, error: summaryError } = useSWR(
 		"/summary",
 		async () => {
+			const subtopicData = sessionStorage.getItem("currentSubtopic");
 			const topicData = sessionStorage.getItem("topic");
-			if (topicData) {
-				const parsedTopic = JSON.parse(topicData);
-				await setTopic(parsedTopic);
+			let currentTopic: {
+				id: string;
+				url: string;
+				title: string;
+				summary: string;
+				subtopics?: { id: string; title: string; summary: string }[];
+			} | null = null;
+
+			if (subtopicData) {
+				currentTopic = JSON.parse(subtopicData);
+			} else if (topicData) {
+				currentTopic = JSON.parse(topicData);
 			}
 
-			// const comments = await getComments();
-			if (!topic) {
+			if (!currentTopic) {
 				throw new Error("No topic selected");
 			}
-			const topicAndComments = await getTopicAndComments(topic.id);
-			if (!topic.title) {
+			await setTopic(currentTopic); // Update topic state with the correct topic
+
+			const topicAndComments = await getTopicAndComments(currentTopic.id); // Use currentTopic.id
+			if (!currentTopic.title) {
 				throw new Error("トピックが取得できていません");
 			}
 			// return await fetchSummaryFromGemini(topic, comments);
 			const matchingTopic = topicAndComments.find(
-				(gotTopic) => gotTopic.id === topic.id,
+				(gotTopic) => gotTopic.id === currentTopic.id,
 			);
 			if (matchingTopic) {
 				setMatchingComment(matchingTopic.comments);
@@ -62,7 +73,7 @@ export const Summary: React.FC = () => {
 			// console.log("matchingTopic", matchingTopic);
 			setTopicLevel(() => {
 				// const matchingTopic = topicAndComments.find(
-				// 	(gotTopic) => gotTopic.id === topic.id,
+				// 	(gotTopic) => gotTopic.id === currentTopic.id,
 				// );
 				return matchingTopic
 					? Math.min(4, Math.floor(matchingTopic.comments.length / 3))
@@ -70,9 +81,9 @@ export const Summary: React.FC = () => {
 			});
 			// return await fetchSummaryFromGemini(topic.url, topicAndComments);
 			// console.log("matchingComment", matchingComment);
-			console.log("topic.url", topic.url);
-			return await fetchSummaryFromGemini(topic.url, [
-				{ name: topic.title, comments: matchingComments || [] },
+			console.log("topic.url", currentTopic.url);
+			return await fetchSummaryFromGemini(currentTopic.url, [
+				{ name: currentTopic.title, comments: matchingComments || [] },
 			]);
 		},
 		{
@@ -86,9 +97,13 @@ export const Summary: React.FC = () => {
 
 	const handleCommentSubmit = async () => {
 		setComment("");
+		const currentSubtopicData = sessionStorage.getItem("currentSubtopic");
+		const topicId = currentSubtopicData
+			? JSON.parse(currentSubtopicData).id
+			: topic?.id;
 		const postData: postData = {
-			id: topic ? topic.id : "no-topic",
-			topic: topic ? topic.title : "no-topic",
+			id: topicId ? topicId : "no-topic",
+			topic: topic ? topic.title : "no-topic", // Still using topic.title as the title might be useful
 			comment: comment,
 		};
 		await postTopicAndComment(postData); // トピックとコメントを送信（即時要約更新なし）
@@ -97,12 +112,16 @@ export const Summary: React.FC = () => {
 	// TopicListから渡されたトピック情報を受け取る
 	// Summaryコンポーネントがマウントされたときに一度だけ実行
 	useEffect(() => {
+		const subtopicData = sessionStorage.getItem("currentSubtopic");
 		const topicData = sessionStorage.getItem("topic");
-		if (topicData) {
+		if (subtopicData) {
+			const parsedSubtopic = JSON.parse(subtopicData);
+			setTopic(parsedSubtopic);
+		} else if (topicData) {
 			const parsedTopic = JSON.parse(topicData);
 			setTopic(parsedTopic);
 		}
-	}, []); // 空の依存配列でマウント時のみ実行
+	}, []);
 
 	return (
 		// メインコンテナ
@@ -113,9 +132,18 @@ export const Summary: React.FC = () => {
 					onClick={() => {
 						window.location.href = "http://localhost:5173/";
 					}}
-					className="bg-[#A9C8A9] text-white border-none rounded-full px-8 py-4 text-lg mb-8 cursor-pointer shadow-md"
+					className="bg-[#A9C8A9] text-white border-none rounded-full px-8 py-4 text-lg mb-8 md:mr-4 cursor-pointer shadow-md"
 				>
 					トップページへ戻る
+				</button>
+				<button
+					type="button"
+					onClick={() => {
+						window.location.href = "http://localhost:5173/topic-list/";
+					}}
+					className="bg-[#A9C8A9] text-white border-none rounded-full px-8 py-4 text-lg mb-8 cursor-pointer shadow-md"
+				>
+					トピックリストへ戻る
 				</button>
 			</div>
 			<h1 className="text-4xl font-extrabold text-gray-800 tracking-tight border-b pb-4 mb-4 border-gray-300">
@@ -139,10 +167,13 @@ export const Summary: React.FC = () => {
 						トピックタイトル:
 						{topic ? topic.title : "（トピックタイトル取得中）"}
 					</p>
-					<p className="text-black text-lg leading-relaxed">
-						トピックサマリ:
-						{topic ? topic.summary : "（トピックサマリ取得中）"}
-					</p>
+					{/* Conditionally render topic summary */}
+					{sessionStorage.getItem("currentSubtopic") ? null : (
+						<p className="text-black text-lg leading-relaxed">
+							トピックサマリ:
+							{topic ? topic.summary : "（トピックサマリ取得中）"}
+						</p>
+					)}
 				</>
 			</div>
 

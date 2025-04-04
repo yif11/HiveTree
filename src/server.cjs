@@ -91,8 +91,8 @@ app.post("/post-topic-and-comment", (req, res) => {
 	if (existingTopic) {
 		existingTopic.comments.push(comment);
 
-		// コメント数が5になったら subTopic を生成
-		if (existingTopic.comments.length === 5) {
+		// コメント数が6になったら subTopic を生成
+		if (existingTopic.comments.length === 6) {
 			//サブトピックを生成するために、makeSubTopicFromUSRLを呼び出す
 			const topics = data.topics;
 			const topicName = existingTopic.name;
@@ -101,7 +101,7 @@ app.post("/post-topic-and-comment", (req, res) => {
 			(async () => {
 				try {
 					const subTopicNames = await makeSubTopicFromURL(topicName, topics);
-					console.log("Subtopic names:", subTopicNames);
+					// console.log("Subtopic names:", subTopicNames);
 					existingTopic.subTopic = [
 						{
 							id: `${id}-sub1`,
