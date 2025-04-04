@@ -138,7 +138,18 @@ export const Summary: React.FC = () => {
 
 	return (
 		// メインコンテナ
-		<div className="summary-container h-screen w-screen overflow-auto p-8 bg-gradient-to-br from-gray-100 to-gray-200 font-sans">
+		<div className="summary-container h-screen w-screen overflow-auto p-8 font-sans bg-[#f2f9f2]">
+			<div className="mt-4 max-md:text-center">
+				<button
+					type="button"
+					onClick={() => {
+						window.location.href = "http://localhost:5173/";
+					}}
+					className="bg-[#A9C8A9] text-white border-none rounded-full px-8 py-4 text-lg mb-8 cursor-pointer shadow-md"
+				>
+					トップページへ戻る
+				</button>
+			</div>
 			<h1 className="text-4xl font-extrabold text-gray-800 tracking-tight border-b pb-4 mb-4 border-gray-300">
 				🌟 Summary of Comments on Topic
 			</h1>
