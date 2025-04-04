@@ -18,7 +18,7 @@ const geoUrl = "/japan.topojson";
 
 const colorScale = scaleLinear<string>()
 	.domain([-1, 0, 1])
-	.range(["#ff3333", "#ffffff", "#3333ff"])
+	.range(["#3333ff", "#ffffff", "#ff3333"])
 	.clamp(true);
 
 export const MapPostArea: React.FC<{ topicId: string }> = ({ topicId }) => {
@@ -30,6 +30,7 @@ export const MapPostArea: React.FC<{ topicId: string }> = ({ topicId }) => {
 	>([]);
 
 	useEffect(() => {
+		if(!topicId||topicId==="No ID")return;
 		const fetchData = async () => {
 			const response = await fetch(geoUrl);
 			const data = await response.json();
@@ -39,7 +40,8 @@ export const MapPostArea: React.FC<{ topicId: string }> = ({ topicId }) => {
 			const sentimentData = await getPrefectureSentiment();
 			//const topicSentiment=sentimentData[topicId]; // specify topic id
 			const topicSentiment =
-				sentimentData["f574dc8c-7604-43ed-9a1b-58d45554c9b3"]; // specify topic id
+				sentimentData[topicId]; // specify topic id
+			console.log(`topicId:${topicId}のトピックについて`);
 
 			if (topicSentiment) {
 				const avgScores: Record<string, number> = {};
@@ -57,7 +59,7 @@ export const MapPostArea: React.FC<{ topicId: string }> = ({ topicId }) => {
 		};
 
 		fetchData();
-	}, []);
+	}, [topicId]);
 
 	return (
 		<ComposableMap
